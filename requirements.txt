@@ -1,0 +1,5 @@
+opencv-python
+mecab-python3
+unidic-lite
+openpyxl
+japanize-matplotlib

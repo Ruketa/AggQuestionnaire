@@ -1,0 +1,11 @@
+version : "3"
+services:
+  jupyternotebook:
+    build:
+      context: .
+    user: root
+    ports:
+      - "80:8888"
+    volumes:
+      - "./source:/home/work"
+    command: start-notebook.sh --NotebookApp.token=""
