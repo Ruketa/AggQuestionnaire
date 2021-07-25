@@ -1,0 +1,11 @@
+@startuml
+class database
+class model
+class cruds
+class schemas
+class initialize
+model --|> database
+cruds o--> model
+cruds o--> schemas
+initialize o--> model
+@enduml
