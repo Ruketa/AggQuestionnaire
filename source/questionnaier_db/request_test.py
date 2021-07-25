@@ -17,6 +17,6 @@ def request_add_questionnaire(url: str):
     res = response.json()
     print(res)
 
-url = "http://localhost:8000/api/questinnaire"
+url = "http://localhost:8000/api/questionnaire"
 
 request_add_questionnaire(url)

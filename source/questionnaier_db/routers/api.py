@@ -16,7 +16,7 @@ def questionnaire_by_holding_num(
 ):
   return cruds.select_questionnaire_by_holding_num(db=db, holding_num=holding_num)
 
-@router.post("/questinnaire")
+@router.post("/questionnaire")
 def add_questionnaire(
   questionnaire: schemas.Questionnaire,
   db: Session = Depends(get_db)
