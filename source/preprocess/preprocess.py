@@ -1,6 +1,8 @@
+from source.Configurations import PreprocessConfigration
 import pandas as pd
-import Configurations as configs
 from typing import List
+
+from requester import AddQuestionnaireDataRequester
 
 class preprocessor(object):
 
@@ -8,19 +10,8 @@ class preprocessor(object):
     self.__configuration = configuration
     return
 
-  # アンケート結果読込
-  def __read_data(self)-> List[pd.DataFrame]:
-    input_df = pd.read_excel(self.__configuration.InputDataPath, engine="openpyxl", sheet_name=0)
-    base_df = pd.read_excel(self.__configuration.BaseDataPath, engine="openpyxl", sheet_name=2)
-    base_df = base_df.drop(base_df.columns[[0]], axis=1)	
-    return input_df, base_df
-
-  # アンケート結果読込
-  def execute(self):
-
-    # アンケート結果読込
-    input_df, base_df = self.__read_data()
-
+  # 指定日付からのデータを抜き出す
+  def __extract_new_data(self, input_df: pd.DataFrame)->pd.DataFrame:
     # 年月日列を追加
     input_df["year"]  = input_df.iloc[:,1].apply(lambda x: x.year)
     input_df["month"] = input_df.iloc[:,1].apply(lambda x: x.month)
@@ -36,9 +27,29 @@ class preprocessor(object):
     new_data_df = pd.DataFrame(columns=["開催回"], data=[self.__configuration.HoldingNum]*len(questionnaire_df))
     new_data_df = pd.concat([new_data_df, questionnaire_df], axis=1)
 
-    # 指定開催回のデータを結合
-    agg_df = pd.concat([base_df, new_data_df])
+    return new_data_df
 
-    # CSVで出力
-    filename = self.__configuration.OutputDir + "Questionnaire.csv"
-    agg_df.to_csv(filename, index=False, encoding="cp932")
+  # アンケート結果読込
+  def execute(self):
+
+    # アンケート結果読込
+    input_df = pd.read_excel(self.__configuration.InputDataPath, engine="openpyxl", sheet_name=0)
+
+    # 指定日付からの新規データを抜き出す
+    new_data_df = self.__extract_new_data(input_df)
+
+    # データ追加リクエスト
+    requester = AddQuestionnaireDataRequester(url=PreprocessConfigration.DbServiceUrl)
+
+    for row in new_data_df.values:
+      addData = {}
+       
+      addData["holding_num"]          = row[0]
+      addData["satisfaction_level"]   = row[1]
+      addData["recommendation_level"] = row[2]
+      addData["topics"]               = row[3]
+      addData["participation_level"]  = row[4]
+      addData["presentation_level"]   = row[5]
+      addData["free_comment"]         = row[6]
+
+      requester.post_data(addData)
