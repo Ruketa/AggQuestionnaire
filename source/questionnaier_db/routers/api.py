@@ -5,16 +5,20 @@ from db.database import get_db
 
 router = APIRouter()
 
-@router.get("/questionnaire/all")
-def questionnaire_all(db: Session = Depends(get_db)):
-  return cruds.select_questionnaire_all(db=db)
+#@router.get("/questionnaire/all")
+#def questionnaire_all(db: Session = Depends(get_db)):
+#  return cruds.select_questionnaire_all(db=db)
 
-@router.get("/questionnaire/holding_num/{holding_num}")
+@router.get("/questionnaire/{holding_num}")
 def questionnaire_by_holding_num(
   holding_num: int,
   db: Session = Depends(get_db)
 ):
-  return cruds.select_questionnaire_by_holding_num(db=db, holding_num=holding_num)
+  print("questionnaire_by_holding_num is called and holding_num is " + str(holding_num))
+  if(holding_num == 0):
+    return cruds.select_questionnaire_all(db=db)
+  else:
+    return cruds.select_questionnaire_by_holding_num(db=db, holding_num=holding_num)
 
 @router.post("/questionnaire")
 def add_questionnaire(

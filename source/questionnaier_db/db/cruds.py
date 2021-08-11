@@ -11,7 +11,7 @@ def select_questionnaire_by_holding_num(
   db: Session,
   holding_num: int
   )->List[schemas.Questionnaire]:
-  return db.query(model.questionnaire).filter(model.questionnaire.holding_num == holding_num)
+  return db.query(model.questionnaire).filter(model.questionnaire.holding_num == holding_num).all()
 
 def add_questionnaire_report(
   db: Session,
